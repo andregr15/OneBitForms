@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgres:
+    image: 'postgres'
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+
+  app:
+    depends_on:
+      - 'postgres'
+    build: .
+    command: bash start.sh
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/app'
+      - 'gems:/gems'
+
+  mailcatcher:
+    image: 'tophfr/mailcatcher'
+    ports:
+      - '1025:25'
+      - '1080:80'
+
+volumes:
+  postgres:
+  gems:
