@@ -10,10 +10,49 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_28_102210) do
+ActiveRecord::Schema.define(version: 2018_08_28_191948) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "answers", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "form_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["form_id"], name: "index_answers_on_form_id"
+    t.index ["user_id"], name: "index_answers_on_user_id"
+  end
+
+  create_table "forms", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.bigint "user_id"
+    t.string "primary_color"
+    t.boolean "enable"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_forms_on_user_id"
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.text "title"
+    t.integer "kind"
+    t.bigint "form_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["form_id"], name: "index_questions_on_form_id"
+  end
+
+  create_table "questions_answers", force: :cascade do |t|
+    t.text "value"
+    t.bigint "answer_id"
+    t.bigint "question_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["answer_id"], name: "index_questions_answers_on_answer_id"
+    t.index ["question_id"], name: "index_questions_answers_on_question_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "provider", default: "email", null: false
@@ -45,4 +84,10 @@ ActiveRecord::Schema.define(version: 2018_08_28_102210) do
     t.index ["uid", "provider"], name: "index_users_on_uid_and_provider", unique: true
   end
 
+  add_foreign_key "answers", "forms"
+  add_foreign_key "answers", "users"
+  add_foreign_key "forms", "users"
+  add_foreign_key "questions", "forms"
+  add_foreign_key "questions_answers", "answers"
+  add_foreign_key "questions_answers", "questions"
 end
