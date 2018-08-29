@@ -61,4 +61,10 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include Devise::Test::ControllerHelpers, type: :controller
+
+  # Custom json helpers
+  config.include Requests::JsonHelpers, type: :request
+
+  # Custom Header helpers
+  config.include Requests:HeaderHelpers, type: :request
 end
