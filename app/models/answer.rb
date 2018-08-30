@@ -5,7 +5,7 @@ class Answer < ApplicationRecord
 
   validates :form, presence: true
 
-  def self.create_with_quetions_answers(form, questions_answers)
+  def self.create_with_questions_answers(form, questions_answers)
     answer = nil
     
     ActiveRecord::Base.transaction do
@@ -14,6 +14,6 @@ class Answer < ApplicationRecord
         answer.questions_answers.create(qa.permit(:question_id, :value))
       end
     end
-
+    answer
   end
 end
