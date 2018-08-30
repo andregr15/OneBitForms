@@ -43,13 +43,13 @@ RSpec.describe "Api::V1::Questions", type: :request do
           it 'should returns the http status 400' do
             form = create(:form, user: @user)
             post '/api/v1/questions', params: { question: {}, form_id: form.id }, headers: header_with_authentication(@user)
-            expct_status(400)
+            expect_status(400)
           end
 
           context 'with an invalid form' do
-            it 'should returns the http status 400' do
+            it 'should returns the http status 404' do
               post '/api/v1/questions', params: { question: {} }, headers: header_with_authentication(@user)
-              expect_status(400)
+              expect_status(404)
             end
           end
         end
@@ -77,7 +77,7 @@ RSpec.describe "Api::V1::Questions", type: :request do
           before do
             @form = create(:form, user: @user)
             @question = create(:question, form: @form)
-            @question_attributes = attributes_for(:question, id = @question.id)
+            @question_attributes = attributes_for(:question, id: @question.id)
             put "/api/v1/questions/#{@question.id}", params: { question: @question_attributes }, headers: header_with_authentication(@user)
           end
 
@@ -94,7 +94,7 @@ RSpec.describe "Api::V1::Questions", type: :request do
 
           it 'should returns the correct data of the updated question' do
             @question_attributes.each do |field|
-              expect(json[field.firts.to_s]).to eql(field.last)
+              expect(json[field.first.to_s]).to eql(field.last)
             end
           end
         end
@@ -103,7 +103,7 @@ RSpec.describe "Api::V1::Questions", type: :request do
           it 'should returns the http status 403' do
             question = create(:question)
             question_attributes = attributes_for(:question, id: question.id)
-            put "/api/v1/question/#{@question.id}", params: { question: question_attributes }, headers: header_with_authentication
+            put "/api/v1/questions/#{question.id}", params: { question: question_attributes }, headers: header_with_authentication(@user)
 
             expect_status(403)
           end
@@ -113,7 +113,7 @@ RSpec.describe "Api::V1::Questions", type: :request do
 
       context 'When question do not exists' do
         it 'should returns the http status 404' do
-          quetion_attributes = attributes_for(:question)
+          question_attributes = attributes_for(:question)
           put '/api/v1/questions/0', params: { question: question_attributes }, headers: header_with_authentication(@user)
 
           expect_status(404)
@@ -156,7 +156,7 @@ RSpec.describe "Api::V1::Questions", type: :request do
         context 'And user is not the form owner' do
           it 'should returns the http status 403' do
             question = create(:question)
-            delete "/api/v1/questions/#{question.id}", param: {}, headers: header_with_authentication(@user)
+            delete "/api/v1/questions/#{question.id}", params: {}, headers: header_with_authentication(@user)
 
             expect_status(403)
           end
@@ -166,7 +166,7 @@ RSpec.describe "Api::V1::Questions", type: :request do
 
       context 'When question do not exists' do
         it 'should returns the http status 404' do
-          delete '/apai/v1/questions/0', params: {}, header_with_authentication(@user)
+          delete '/api/v1/questions/0', params: {}, headers: header_with_authentication(@user)
           expect_status(404)
         end
       end
