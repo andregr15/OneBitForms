@@ -58,7 +58,7 @@ RSpec.describe "Api::V1::Forms", type: :request do
         end
 
         it 'should returns the form with the right data' do
-          expect(json).to eql(JSON.parse(@form.to_json))
+          expect(json.except('questions')).to eql(JSON.parse(@form.to_json))
         end
 
         it 'should returns the associated questions on the form' do
@@ -117,6 +117,38 @@ RSpec.describe "Api::V1::Forms", type: :request do
             expect(json[field.first.to_s]).to eql(field.last)
           end
         end
+
+        it 'should return the https status 403' do
+          form_attributes1 = attributes_for(:form, title: @form_attributes[:title])
+          post '/api/v1/forms', params: { form: form_attributes1 }, headers: header_with_authentication(@user)
+          expect_status(403)
+        end
+
+        context 'And with a title that already exists in database but diferent owners' do
+          before do
+            other_user = create(:user)
+            @form_attributes1 = attributes_for(:form, title: @form_attributes[:title])
+            post '/api/v1/forms', params: { form: @form_attributes1 }, headers: header_with_authentication(other_user)
+          end
+
+          it 'should returns the https status 200' do
+            expect_status(200)
+          end
+
+          it 'should have created the for in the database' do
+            form = Form.last
+            @form_attributes1.each do |field|
+              expect(form[field.first]).to eql(field.last)
+            end
+          end
+
+          it 'should have returned the correct data' do
+            @form_attributes1.each do |field|
+              expect(json[field.first.to_s]).to eql(field.last)
+            end
+          end
+        end
+
       end
 
       context 'And with invalid params' do
@@ -165,7 +197,7 @@ RSpec.describe "Api::V1::Forms", type: :request do
               expect(json[field.first.to_s]).to eql(field.last)
             end
           end
-          
+         
         end
 
         context 'And user is not the owner' do
@@ -208,7 +240,7 @@ RSpec.describe "Api::V1::Forms", type: :request do
         end
 
         it 'should have deleted the form from the database' do
-          execpt(Form.all.count).to eql(0)
+          expect(Form.all.count).to eql(0)
         end
 
         it 'should have deleted the associated questions on the form' do
@@ -227,7 +259,7 @@ RSpec.describe "Api::V1::Forms", type: :request do
 
       context 'When the form do not exists' do
         it 'should returns the http status 404' do
-          delete "/api/v1/forms/#{FFaker.Lorem.word}", params: {}, headers: header_with_authentication(@user)
+          delete "/api/v1/forms/#{FFaker::Lorem.word}", params: {}, headers: header_with_authentication(@user)
           expect_status(404)
         end
       end

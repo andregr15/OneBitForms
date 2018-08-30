@@ -1,6 +1,6 @@
 class Form < ApplicationRecord
   extend FriendlyId
-  friendly_id :title, user: :slugged
+  friendly_id :title, use: :slugged
 
   belongs_to :user
   has_many :questions, dependent: :destroy
