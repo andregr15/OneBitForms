@@ -11,8 +11,8 @@ RSpec.describe "Api::V1::Answers", type: :request do
       before do
         @user = create(:user)
         @form = create(:form, user: @user)
-        @answer1 = create(:answer, form: @form)
-        @answer2 = create(:answer, form: @form)
+        @answer1 = create(:question, form: @form)
+        @answer2 = create(:question, form: @form)
         get '/api/v1/answers', params: { form_id: @form.id }, headers: header_with_authentication(@user)
       end
 
@@ -78,7 +78,7 @@ RSpec.describe "Api::V1::Answers", type: :request do
 
   describe 'POST /answers' do
 
-   context 'And with valid form id' do
+    context 'And with valid form id' do
       before do
         @user = create(:user)
         @form = create(:form, user: @user)
@@ -87,8 +87,8 @@ RSpec.describe "Api::V1::Answers", type: :request do
         @questions_answers_2_attributes = attributes_for(:questions_answer, question_id: @question.id)
         post '/api/v1/answers', params: {
           form_id: @form.id, questions_answers: [
-            @questions_answers_1_attributes,
-            @questions_answers_2_attributes
+            { value: @questions_answers_1_attributes[:value], question: { id: @question.id } },
+            { value: @questions_answers_2_attributes[:value], question: { id: @question.id } }
           ],
           headers: header_with_authentication(@user)
         }
