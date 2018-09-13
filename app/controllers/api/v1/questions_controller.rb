@@ -20,8 +20,8 @@ class Api::V1::QuestionsController < Api::V1::ApiController
   end
 
   def reorder
-    if(!params['questions_order'].nil?)
-      params['questions_order'].each do |qa|
+    if(!reorder_params['questions_order'].nil?)
+      reorder_params['questions_order'].each do |qa|
         question = Question.find(qa['question_id'].to_i)
         question.update(order: qa['question_order'].to_i)
       end
@@ -47,5 +47,9 @@ class Api::V1::QuestionsController < Api::V1::ApiController
 
     def question_params
       params.required(:question).permit(:title, :kind, :required, :order)
+    end
+
+    def reorder_params
+      params.permit(:form_id, { questions_order: [:question_id, :question_order]})
     end
 end
