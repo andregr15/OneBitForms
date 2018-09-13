@@ -10,7 +10,7 @@ class Api::V1::FormsController < Api::V1::ApiController
 
   def show
     setQuestionsOrder()
-    render json: @form, include: 'questions', order: :order
+    render json: @form, include: 'questions', order: 'order asc'
   end
 
   def update
