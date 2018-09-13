@@ -4,6 +4,11 @@ class Api::V1::QuestionsController < Api::V1::ApiController
   before_action :set_form
   before_action :allow_only_owner, only: [:create, :update, :destroy, :reorder]
 
+  def index
+    @questions = @form.questions
+    render json: @questions, include: 'questions_answers'
+  end
+
   def create
     @question = Question.create(question_params.merge(form: @form))
     render json: @question

@@ -5,8 +5,8 @@ class Api::V1::AnswersController < Api::V1::ApiController
   before_action :allow_only_owner, only: [:index, :show, :destroy]
 
   def index
-    @questions = @form.questions
-    render json: @questions, include: 'questions_answers'
+    @answers = @form.answers
+    render json: @answers, include: { questions_answers: { include: :question } }
   end
 
   def show

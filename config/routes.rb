@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       mount_devise_token_auth_for 'User', at: 'auth'
       resources :forms
       patch '/questions', to: 'questions#reorder'
-      resources :questions, only: [:create, :update, :destroy]
+      resources :questions, only: [:create, :update, :destroy, :index]
       resources :answers, only: [:index, :show, :create, :destroy]
     end
   end
