@@ -9,7 +9,8 @@ class Api::V1::FormsController < Api::V1::ApiController
   end
 
   def show
-    render json: @form, include: 'questions'
+    setQuestionsOrder()
+    render json: @form, include: 'questions', order: :order
   end
 
   def update
@@ -45,5 +46,13 @@ class Api::V1::FormsController < Api::V1::ApiController
 
     def form_params
       params.require(:form).permit(:title, :description, :enable, :primary_color).merge(user: current_api_v1_user)
+    end
+
+    def setQuestionsOrder
+      @form.questions.select { |q| q.order.nil? || q.order == 0}.each do |q|
+        max = @form.questions.select { |q| !q.order.nil? && q.order != 0}.map(&:order).max
+        q.order = max + 1
+        q.update(order: q.order)
+      end
     end
 end

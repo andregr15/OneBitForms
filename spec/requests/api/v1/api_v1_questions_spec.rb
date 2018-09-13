@@ -124,6 +124,67 @@ RSpec.describe "Api::V1::Questions", type: :request do
 
   end
 
+  describe 'PATCH /questions' do
+    context 'With invalid authentication headers' do
+      it_behaves_like :deny_without_authorization, :patch, '/api/v1/questions'
+    end
+
+    context 'With valid authentication headers' do
+      before do
+        @user = create(:user)
+      end
+
+      context 'When the questions exists' do
+
+        context 'And the user is the form owner' do
+          before do
+            @form = create(:form, user: @user)
+            @questions_order = []
+            5.times do
+              question = create(:question, form: @form)
+              @questions_order << { question_id: question.id, question_order: rand(1..999) }
+            end
+            
+            patch '/api/v1/questions', params: { questions_order: @questions_order, form_id: @form.id }, headers: header_with_authentication(@user)
+          end
+
+          it 'should returns the http status 200' do
+            expect_status(200)
+          end
+
+          it 'should have updated the questions order in database' do
+            @questions_order.each do |qo|
+              expect(Question.find(qo[:question_id]).order).to eq(qo[:question_order])
+            end
+          end
+
+        end
+
+        context 'And the user is not the form owner' do
+          it 'should return the http status 403' do
+            question = create(:question)
+            question_order = [{ question_id: question.id, question_order: rand(1..999) }]
+            
+            patch '/api/v1/questions', params: { questions_order: question_order, form_id: question.form.id }, headers: header_with_authentication(@user)
+
+            expect_status(403)
+          end
+        end
+
+      end
+
+      context 'When the questions do not exists' do
+        it 'should return the http status 404' do
+          question_order = [{ question_id: rand(1..999), question_order: rand(1..10) }]
+          patch '/api/v1/questions', params: { questions_order: question_order, form_id: rand(1..10) }, headers: header_with_authentication(@user)
+          expect_status(404)
+        end
+      end
+
+    end
+
+  end
+
   describe 'DELETE /questions/:id' do
     before do
       @user = create(:user)

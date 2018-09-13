@@ -2,7 +2,7 @@ class Api::V1::QuestionsController < Api::V1::ApiController
   before_action :authenticate_api_v1_user!
   before_action :set_question, only: [:update, :destroy]
   before_action :set_form
-  before_action :allow_only_owner, only: [:create, :update, :destroy]
+  before_action :allow_only_owner, only: [:create, :update, :destroy, :reorder]
 
   def create
     @question = Question.create(question_params.merge(form: @form))
@@ -17,6 +17,17 @@ class Api::V1::QuestionsController < Api::V1::ApiController
   def destroy
     @question.destroy
     render json: { message: 'ok' }
+  end
+
+  def reorder
+    if(!params['questions_order'].nil?)
+      params['questions_order'].each do |qa|
+        question = Question.find(qa['question_id'].to_i)
+        question.update(order: qa['question_order'].to_i)
+      end
+    end
+
+      render json: { message: 'ok'}
   end
 
   private
