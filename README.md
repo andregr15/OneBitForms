@@ -1,6 +1,8 @@
 # OneBitForms
 
-Ruby on Rails Api for OneBitForms Client (Google Forms Clone)
+Google Forms clone build in Angular + Rails
+
+Ruby on Rails Api for OneBitFormsClient (Google Forms Clone)
 
 ## Getting Started
 
