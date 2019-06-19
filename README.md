@@ -110,7 +110,7 @@ $ bundle exec rspec
 
 ## Authors
 
-* **André Gonçalves Rodrigues** - *Initial work* - [andregr15](https://github.com/andregr15)
+* **André Gonçalves Rodrigues** - [andregr15](https://github.com/andregr15)
 
 ## License
 
