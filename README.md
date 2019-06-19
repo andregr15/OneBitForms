@@ -81,7 +81,7 @@ $ bundle exec rails db:migrate
 After that for test the installation enter the following to up the server
 
 ```
-$ rails s
+$ bundle exec rails s
 ```
 
 Open your browser and access localhost:3000 to see the home page
